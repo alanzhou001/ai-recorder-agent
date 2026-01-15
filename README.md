@@ -5,33 +5,28 @@
 
 ---
 
-## 一、项目简介（What & Why）
+## 一、项目简介与目标（What & Why）
 
-**AI Recorder Agent** 是一个以 **实时语音理解** 为核心的后端系统，目标是替代市面上“录音卡片 / 会议助手”的封闭方案，提供：
+一个以 **实时语音理解** 为核心的后端系统，目标是替代市面上“录音卡片 / 会议助手”的封闭方案，提供：
 
-- ✅ **实时录音 + 分片上传（chunk）**
-- ✅ **Whisper（faster-whisper）实时转写**
-- ✅ **字幕级体验**
+- **实时录音 + 分片上传（chunk）**
+- **Whisper（faster-whisper）实时转写**
+- **字幕级体验**
   - 实时滚动（partial）
   - 句子稳定落地（final）
   - 跨 chunk 去重
-- ✅ **LLM 严格保真修复层**
+- **LLM 严格保真修复层**
   - 自动补标点
   - 专名规范
   - 去口癖
   - 不改语义、不编造
-- ✅ **会后总结 + QA（RAG）**
+- **会后总结 + QA（RAG）**
   - 基于转写内容回答问题
   - 所有结论带时间戳引用
-- ✅ **完全后端化**
+- **完全后端化**
   - 无 UI 依赖
   - Windows / macOS / Linux 客户端均可接入
   - 方便后续接硬件、Web UI、App
-
-系统设计遵循两个原则：
-
-> **可解释（每句话有来源）**  
-> **可控（任何 LLM 输出都不“编造”）**
 
 ---
 
@@ -114,14 +109,14 @@ ai-recorder-agent/
 
 ## 四、运行环境要求
 
-### 1️⃣ 后端（推荐：Linux / WSL）
+### 后端（推荐：Linux / WSL）
 
 - Python **3.10+**
 - NVIDIA GPU（可选，但强烈推荐）
 - CUDA 12.x（与驱动匹配）
 - `ffmpeg` / `ffprobe`
 
-### 2️⃣ 客户端
+### 客户端
 
 - Windows / macOS / Linux
 - Python 3.x
@@ -129,7 +124,7 @@ ai-recorder-agent/
 
 ---
 
-## 五、快速开始（10 分钟跑起来）
+## 五、快速开始
 
 ### Step 1：克隆项目
 
@@ -138,7 +133,7 @@ git clone https://github.com/<YOUR_NAME>/ai-recorder-agent.git
 cd ai-recorder-agent
 ```
 
-### Step 2: 创建 Python 环境（使用 uv）
+### Step 2: 创建 Python 环境
 
 ```bash
 pip install uv
@@ -157,7 +152,7 @@ uv add fastapi uvicorn httpx pydantic rank-bm25 soundfile python-multipart
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-## 六、核心使用方式
+## 六、使用方式
 
 ### 创建会话
 
@@ -279,3 +274,4 @@ python mic_stream_client.py \
 ## 待解决
 
 1. 实时转写延迟
+2. UI界面
