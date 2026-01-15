@@ -275,3 +275,7 @@ python mic_stream_client.py \
 
 * `PARTIAL`：实时滚动字幕（可能被后续修正）
 * `FINAL`：已稳定落地的句子，不再修改
+
+## 待解决
+
+1. 实时转写延迟
