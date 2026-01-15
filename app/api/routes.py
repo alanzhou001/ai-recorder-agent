@@ -20,6 +20,20 @@ from app.storage.session_store import (
 )
 from app.audio.probe import probe_duration_seconds
 
+from app.asr.text_postprocess import (
+    merge_segments_text,
+    dedup_join,
+    split_into_final_and_partial,
+)
+from app.storage.session_state import load_state, save_state
+from app.asr.text_postprocess import (
+    merge_segments_text,
+    dedup_join,
+    split_into_final_and_partial,
+)
+from app.storage.session_state import load_state, save_state
+
+
 router = APIRouter()
 
 RECORDING_DIR = Path(__file__).resolve().parents[2] / "data" / "recordings"
@@ -100,6 +114,33 @@ def upload_chunk(
             t_offset=t_offset_used,
         )
 
+        # --- NEW: subtitle postprocess (dedup + stable sentences) ---
+        state = load_state(session_id)
+
+        chunk_text = merge_segments_text(result["segments"])
+        # 跨 chunk 去重拼接到 buffer
+        buffer_text = dedup_join(state.get("buffer_text", ""), chunk_text)
+
+        finals, partial = split_into_final_and_partial(buffer_text)
+
+        # 如果你希望“太长也强制落地”（避免一直没标点）
+        # 可选：超过 N 字就切一刀当 final
+        MAX_BUF_LEN = 40
+        final_texts = []
+        if len(partial) > MAX_BUF_LEN:
+            final_texts.append(partial)
+            partial = ""
+        # 将标点分出的 finals + 强制落地的 final_texts 统一输出
+        final_texts = finals + final_texts
+        # 更新 state
+        state["buffer_text"] = partial
+        state["final_count"] = int(state.get("final_count", 0)) + len(final_texts)
+        # 可选：记录 end
+        if result["segments"]:
+            state["last_end"] = float(max(s["end"] for s in result["segments"]))
+        save_state(session_id, state)
+        # --- END NEW ---
+
         from app.summarizer.merger import merge_segments
         result["segments"] = merge_segments(result["segments"])
 
@@ -125,6 +166,9 @@ def upload_chunk(
         save_meta(session_id, meta)
 
         return {
+            "segments": result["segments"],
+            "partial_text": partial,
+            "final_texts": final_texts,
             "session_id": session_id,
             "chunk_index": chunk_index,
             "t_offset": t_offset_used,
