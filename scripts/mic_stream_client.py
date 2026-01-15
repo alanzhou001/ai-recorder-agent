@@ -62,7 +62,7 @@ def main():
     p.add_argument("--model", default="small", help="small / medium etc.")
     p.add_argument("--language", default=None, help="e.g. zh; or omit for auto-detect")
     p.add_argument("--sr", type=int, default=16000, help="sample rate")
-    p.add_argument("--chunk-sec", type=float, default=1.5, help="chunk seconds")
+    p.add_argument("--chunk-sec", type=float, default=5.0, help="chunk seconds")
     p.add_argument("--device", type=int, default=None, help="input device index (optional)")
     p.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout seconds")
     p.add_argument(
