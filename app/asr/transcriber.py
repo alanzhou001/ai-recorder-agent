@@ -1,16 +1,14 @@
 # app/asr/transcriber.py
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from .model_manager import get_whisper_model
 
 
 def transcribe_audio(
     audio_path: str,
     model_name: str = "small",
-    language: str | None = None,
+    language: Optional[str] = None,
+    t_offset: float = 0.0,
 ) -> Dict[str, Any]:
-    """
-    转写音频文件，返回 segments
-    """
     model = get_whisper_model(model_name)
 
     segments, info = model.transcribe(
@@ -24,8 +22,8 @@ def transcribe_audio(
         results.append(
             {
                 "id": seg.id,
-                "start": seg.start,
-                "end": seg.end,
+                "start": float(seg.start) + float(t_offset),
+                "end": float(seg.end) + float(t_offset),
                 "text": seg.text.strip(),
             }
         )

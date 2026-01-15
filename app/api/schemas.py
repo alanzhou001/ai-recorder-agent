@@ -1,6 +1,6 @@
 # app/api/schemas.py
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class Segment(BaseModel):
@@ -11,6 +11,22 @@ class Segment(BaseModel):
 
 
 class TranscriptionResponse(BaseModel):
+    model: str
+    language: str
+    segments: List[Segment]
+
+
+class CreateSessionResponse(BaseModel):
+    session_id: str
+    model: str
+    language: Optional[str] = None
+
+
+class ChunkTranscribeResponse(BaseModel):
+    session_id: str
+    chunk_index: int
+    t_offset: float
+    duration: float
     model: str
     language: str
     segments: List[Segment]
