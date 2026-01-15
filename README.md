@@ -37,67 +37,78 @@
 
 ## 二、整体架构概览
 
-```mermaid
-[Mic / Audio File]
-|
-v
-[Chunk Client]
-|
-v
-[FastAPI Backend]
-├─ Session 管理
-├─ Chunk 接收
-├─ Whisper ASR
-├─ 字幕级去重与稳定输出
-├─ Transcript 存储
-├─ LLM Post-Edit（严格保真）
-└─ RAG（Summary / QA）
+```text
+┌──────────────────┐
+│ Mic / Audio File │
+└─────────┬────────┘
+          │
+          ▼
+┌──────────────────┐
+│  Chunk Client    │
+│  (Realtime /     │
+│   Offline)       │
+└─────────┬────────┘
+          │
+          ▼
+┌──────────────────────────────────────────┐
+│            FastAPI Backend                │
+│                                          │
+│  ├─ Session 管理                          │
+│  ├─ Chunk 接收 / 时间轴对齐               │
+│  ├─ Whisper ASR (faster-whisper)          │
+│  ├─ 字幕级去重与稳定输出 (partial/final) │
+│  ├─ Transcript 持久化存储                 │
+│  ├─ LLM Post-Edit（严格保真）             │
+│  └─ RAG（Summary / QA，带时间戳引用）     │
+│                                          │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
 ## 三、目录结构说明（重要）
 
-'''mermaid
+```text
 ai-recorder-agent/
 ├── app/
-│ ├── main.py # FastAPI 入口
-│ │
-│ ├── api/
-│ │ └── routes.py # 所有 HTTP API（核心）
-│ │
-│ ├── asr/
-│ │ └── transcriber.py # faster-whisper 封装
-│ │
-│ ├── llm/
-│ │ ├── postedit.py # LLM 严格保真修复层
-│ │ ├── prompts.py # Post-edit Prompt
-│ │ └── providers/
-│ │ ├── base.py # LLM Provider 抽象
-│ │ └── openai_compat.py # OpenAI / DeepSeek / 通义 兼容接口
-│ │
-│ ├── rag/
-│ │ ├── index.py # BM25 索引
-│ │ ├── retriever.py # 检索
-│ │ ├── qa.py # 基于引用的 QA
-│ │ └── summary.py # 会后总结（带时间戳）
-│ │
-│ └── storage/
-│ ├── session_store.py # Session 目录与锁
-│ ├── session_state.py # 字幕级状态（partial/final）
-│ └── artifacts.py # clean transcript / summary 等产物
+│   ├── main.py                  # FastAPI 入口
+│   │
+│   ├── api/
+│   │   └── routes.py             # 所有 HTTP API（核心）
+│   │
+│   ├── asr/
+│   │   └── transcriber.py        # faster-whisper 封装
+│   │
+│   ├── llm/
+│   │   ├── postedit.py           # LLM 严格保真修复层
+│   │   ├── prompts.py            # Post-edit Prompt
+│   │   └── providers/
+│   │       ├── base.py            # LLM Provider 抽象
+│   │       └── openai_compat.py   # OpenAI / DeepSeek / 通义 兼容接口
+│   │
+│   ├── rag/
+│   │   ├── index.py              # BM25 索引
+│   │   ├── retriever.py          # 检索逻辑
+│   │   ├── qa.py                 # 基于引用的 QA
+│   │   └── summary.py            # 会后总结（带时间戳）
+│   │
+│   └── storage/
+│       ├── session_store.py      # Session 目录与锁
+│       ├── session_state.py      # 字幕级状态（partial/final）
+│       └── artifacts.py          # clean transcript / summary 等产物
 │
 ├── data/
-│ └── sessions/ # 运行时数据（git 忽略）
+│   └── sessions/                 # 运行时数据（git 忽略）
 │
 ├── scripts/
-│ └── mic_stream_client.py # Windows 实时麦克风客户端示例
+│   └── mic_stream_client.py      # Windows 实时麦克风客户端示例
 │
-├── .env # 环境变量示例
+├── .env.example                  # 环境变量示例
 ├── .gitignore
 ├── pyproject.toml
 └── README.md
 ```
+
 
 ---
 
