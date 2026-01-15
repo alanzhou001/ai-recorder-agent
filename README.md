@@ -37,6 +37,7 @@
 
 ## 二、整体架构概览
 
+```mermaid
 [Mic / Audio File]
 |
 v
@@ -51,11 +52,13 @@ v
 ├─ Transcript 存储
 ├─ LLM Post-Edit（严格保真）
 └─ RAG（Summary / QA）
+```
 
 ---
 
 ## 三、目录结构说明（重要）
 
+'''mermaid
 ai-recorder-agent/
 ├── app/
 │ ├── main.py # FastAPI 入口
@@ -94,7 +97,7 @@ ai-recorder-agent/
 ├── .gitignore
 ├── pyproject.toml
 └── README.md
-
+```
 
 ---
 
