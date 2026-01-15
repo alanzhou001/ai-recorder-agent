@@ -9,6 +9,7 @@ dependencies = [
     "faster-whisper>=1.2.1",
     "numpy>=2.4.1",
     "python-dotenv>=1.2.1",
+    "python-multipart>=0.0.21",
     "uvicorn[standard]>=0.40.0",
 ]
 
